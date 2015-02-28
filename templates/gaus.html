@@ -118,10 +118,14 @@
 		}
 	</script>
     <script>
-		var UID_NAME = 'uuid';
+		// Expected field names 
+		var UID_NAME = 'uuid'; 
 		var DIST_NAME = 'proximity';
 		
-		var globalData; // Global
+		//var DATA_SOURCE = "http://iheartbacon.retentionsandbox.com/sites/1/who-wants-my-bacon";
+		var DATA_SOURCE = "/getdists";
+				
+		var globalData; // Store location data globally.
 		var uidVisitOrder = {}; // Global. Track the order in which new uids are seen.
 
 		$(document).ready(function() {
@@ -130,7 +134,7 @@
 				setTimeout(function() {
 					$.ajax({
 						//url: "/getdists",
-						url: "http://iheartbacon.retentionsandbox.com/sites/1/who-wants-my-bacon",
+						url: DATA_SOURCE,
 						type: "GET",
 						success: function(data) {
 							update_data(data);
@@ -159,6 +163,9 @@
 				if (!(thisUser in uidVisitOrder)) {
 					uidVisitOrder[thisUser] = Object.keys(uidVisitOrder).length;
 				}
+				if (globalData[dict][DIST_NAME] < 0.0) {
+					globalData[dict][DIST_NAME] = 0.0; // Just in case
+				}
 			}
 			console.log('Visit mapping:');
 			console.log(uidVisitOrder);
@@ -185,7 +192,7 @@
 
 		
 		//d3.json("/getdists", callback);
-		d3.json("http://iheartbacon.retentionsandbox.com/sites/1/who-wants-my-bacon", callback);
+		d3.json(DATA_SOURCE, callback);
 		
     </script>
 
