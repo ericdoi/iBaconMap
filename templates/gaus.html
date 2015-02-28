@@ -5,8 +5,10 @@
 
     <title>iBacon Map</title>
 
+	<script type="text/javascript" src="/static/$(project).js"></script>
 	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
     <style>
 		/* For table data */
 		td, th {
@@ -56,7 +58,7 @@
 
 	<style>
 		body {
-		    /*background: #192887;*/
+			/*background: #192887;*/
 		}
 		.graticule {
 		    fill: none;
@@ -93,11 +95,34 @@
     </div>
 		<p> Polled data:</p>
 	<div id="feed">
-	
+	<script>
+		function rainbow(numOfSteps, step) {
+		    // This function generates vibrant, "evenly spaced" colours (i.e. no clustering). This is ideal for creating easily distinguishable vibrant markers in Google Maps and other apps.
+		    // Adam Cole, 2011-Sept-14
+		    // HSV to RBG adapted from: http://mjijackson.com/2008/02/rgb-to-hsl-and-rgb-to-hsv-color-model-conversion-algorithms-in-javascript
+		    var r, g, b;
+		    var h = step / numOfSteps;
+		    var i = ~~(h * 6);
+		    var f = h * 6 - i;
+		    var q = 1 - f;
+		    switch(i % 6){
+		        case 0: r = 1, g = f, b = 0; break;
+		        case 1: r = q, g = 1, b = 0; break;
+		        case 2: r = 0, g = 1, b = f; break;
+		        case 3: r = 0, g = q, b = 1; break;
+		        case 4: r = f, g = 0, b = 1; break;
+		        case 5: r = 1, g = 0, b = q; break;
+		    }
+		    var c = "#" + ("00" + (~ ~(r * 255)).toString(16)).slice(-2) + ("00" + (~ ~(g * 255)).toString(16)).slice(-2) + ("00" + (~ ~(b * 255)).toString(16)).slice(-2);
+		    return (c);
+		}
+	</script>
     <script>
 		var globalData; // Global
-		
+		var uidVisitOrder = {}; // Global. Track the order in which new uids are seen.
+
 		$(document).ready(function() {
+			// $("body").css("background-color",rainbow(maxColors,2));
 			(function poll() {
 				setTimeout(function() {
 					$.ajax({
@@ -123,7 +148,17 @@
         };
 
 		var update_data = function(data) {
-			globalData = data
+			globalData = data;
+			for (var dict in globalData) {
+				var thisUser = globalData[dict]['userId'];
+				if (!(thisUser in uidVisitOrder)) {
+					uidVisitOrder[thisUser] = Object.keys(uidVisitOrder).length;
+				}
+			}
+			console.log('Visit mapping:');
+			console.log(uidVisitOrder);
+			console.log('Color mapping:');
+			console.log(colorMap);
 		}
 		
 		var update_table = function(reference) {
@@ -151,7 +186,9 @@
 		//var data = [{x:-8,y:100},{x:-10,y:110},{x: -12,y:120}];
 		 // Test Data
 		var beacon = {x: 0, y: 0};
-		var beacons = [beacon];
+	 	// Only one beacon allowed for now since translation loops on global data rather than beacons. 
+		var beacons = [beacon]; 
+		
 		/*
 		var data = [{
 		    userId: 1,
@@ -164,16 +201,25 @@
 		    distance: 192
 		}];*/
 		
+		var MAX_COLORS = 10;
 		
-		var colorMap = {
+		/*var colorMap = {
 		    1:"#0000FF",
 		    2:"#00FF00",
 		    3:"#9900CC"
-		}
+		}*/
+		
+		function generateColorMap(numColors) {
+			map = {};
+			for (i = 0; i < numColors; i++) { 
+			    map[i] = rainbow(numColors, i);
+			}
+			return map;
+		};
+		
+		var colorMap = generateColorMap(MAX_COLORS);
     
 		var interval = 750;
-
-
 
 		var width = 960,
 		    height = 500;
@@ -236,7 +282,7 @@
 		            .style("stroke", colorMap[datum.userId])
 		            .transition()
 		            .ease("linear")
-		            .duration(1200)
+		            .duration(2000)
 		            .style("stroke-opacity", 1e-6)
 		            .style("stroke-width", 1)
 		            .style("stroke", colorMap[datum.userId])
