@@ -1,0 +1,69 @@
+/* For table data */
+td, th {
+    padding: 1px 4px;
+}
+
+#intro  {
+    padding:1em;
+}
+
+path.line {
+    fill: none;
+    stroke: #666;
+    stroke-width: 1.5px;
+}
+
+.domain {
+    stroke-width: 1px;
+}
+
+circle {
+    cursor: pointer;
+}
+
+.axis {
+    shape-rendering: crispEdges;
+}
+
+.axis line, .axis path {
+    stroke-width: 1px;
+    stroke: #000;
+    fill: none;
+}
+
+.tooltip {
+    display: none;
+}
+
+.tooltip.active {
+    display: block;
+}
+
+.tooltip rect {
+    fill: #ff0000;
+}
+
+/* D3 Styles*/
+body {
+	/*background: #192887;*/
+}
+.graticule {
+    fill: none;
+    stroke: #fff;
+    stroke-width: .5px;
+}
+.land {
+    fill: #007421;
+}
+.dot {
+    fill: #c7141a;
+}
+.ring {
+    fill: none;
+    stroke: #c7141a;
+}
+#map {
+		background: url(http://members.retentionsandbox.com/rs_hollywood2.png) no-repeat;
+	width: 1070px;
+	height: 832px;
+}
