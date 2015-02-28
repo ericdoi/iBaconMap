@@ -20,26 +20,12 @@ def dated_url_for(endpoint, **values):
 
 ##### Page Routes ####
 
-@app.route("/hello")
-def index():
-    """
-    When you request the root path, you'll get the index.html template.
-
-    """
-    return flask.render_template("index.html")
-
-
 @app.route("/")
-def gindex():
+def mindex():
     """
-    When you request the gaus path, you'll get the gaus.html template.
-
+    Get map template.
     """
-    mux = request.args.get('mux', '')
-    muy = request.args.get('muy', '')
-    if len(mux)==0: mux="3."
-    if len(muy)==0: muy="3."
-    return flask.render_template("gaus.html",mux=mux,muy=muy)
+    return flask.render_template("map.html")
 
 
 @app.route("/data")
