@@ -1,0 +1,17 @@
+<!doctype html>
+<title>iBacon{% block title %}{% endblock %}</title>
+<script type="text/javascript" src="/static/$(project).js"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='project.css')}}">
+<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}">
+<div class=page>
+    <h1>iBacon Map</h1>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class=flash>{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <div class=header>{% block header %}<h2>Subtitle</h2>{% endblock %}</div>
+    <div class=content>{% block content %}{% endblock %}</div>
+</div>

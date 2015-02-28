@@ -1,0 +1,91 @@
+body { font-family: helvetica; font-size: 0.85em; color: #333333; background: white; }
+h1, h2 { font-family: helvetica; margin: 0; }
+h1 { border-bottom: 2px solid #eee; font-size: 2em; }
+h2 { font-size: 1.3em; }
+
+.page { margin: 2em auto; width: 70em; 
+        /*border: 5px solid #ccc;*/
+        padding: 0.8em; background: white; }
+.loginHeader { text-align: right; font-size: 0.9em;
+               padding: 0.3em; margin-bottom: lem;
+               background: #fafafa; }
+.flash { background: #cee5F5; padding: 0.5em;
+         border: 1px solid #aacbe2; }
+
+.sitenav
+{
+   margin: 10px;
+   font-size: 1.2em;
+}
+.sitenav ul
+{ 
+    list-style-type:none;
+    margin:0;
+    padding:0;
+    overflow:hidden;
+}
+.sitenav li
+{
+    float:left;
+}
+.sitenav a
+{
+    display:block; 
+    width:120px;
+    background-color:#EEEEEE;
+    border:1px solid #FFFFFF;
+    text-align:center;
+    font-weight:bold;
+}
+
+li
+{
+    padding:0.5em 0em 0.5em 0em;
+}
+table
+{
+    margin: 45px;
+    table-layout: fixed;
+    width: 854px;
+}
+table, th, td
+{
+    border-collapse: collapse;
+    text-align: left;
+}
+th
+{
+    /*font-weight: normal;*/
+    padding: 10px 5px;
+    border-bottom: 2px solid #6678b1;
+}
+td
+{
+    border-bottom: 1px solid #ccc;
+    padding: 6px 5px;
+}
+tbody tr:hover td
+{
+    background: #dadafd;
+}
+th.title, td.title
+{
+    width:325px;
+}
+span.available
+{
+    /*color:#006600;*/
+    background-color:#CCFFCC;
+    font-weight:bold;
+}
+span.missing
+{
+    /*color:#990000;*/
+    background-color:#FFCCCC;
+    font-weight:bold;
+}
+span.heldBy
+{
+    background-color:#FFFF99;
+    /*font-weight:bold;*/
+}
