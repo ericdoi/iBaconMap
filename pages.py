@@ -95,11 +95,12 @@ def getdists():
     """
     Simulates json data from server.
     """
+    scale = 200
     testData = [
-        {'userId':1, 'distance':np.random.random()},
-        {'userId':2, 'distance':np.random.random()},
-        {'userId':3, 'distance':np.random.random()},
-        {'userId':4, 'distance':np.random.random()}
+        {'userId':1, 'distance':np.random.random()*scale},
+        {'userId':2, 'distance':np.random.random()*scale},
+        {'userId':3, 'distance':np.random.random()*scale},
+        {'userId':4, 'distance':np.random.random()*scale}
      ]
     return json.dumps(testData)
 

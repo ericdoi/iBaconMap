@@ -73,23 +73,30 @@
 		    fill: none;
 		    stroke: #c7141a;
 		}
+		#map {
+  			background: url(http://members.retentionsandbox.com/rs_hollywood2.png) no-repeat;
+			width: 1070px;
+			height: 832px;
+		}
 	</style>
 
 </head>
 <body>
     <h1>iBacon Map in d3.js &amp; Flask</h1>
     <div id="intro">
-    	Update values!
-    </div>
-	<p> Polled data:</p>
-	<div id="update">
-	
+    	Update values
 	</div>
 
-	<div id='svg'>
+	<div id='map'>
 	</div>
+
+    </div>
+		<p> Polled data:</p>
+	<div id="feed">
 	
     <script>
+		var globalData; // Global
+		
 		$(document).ready(function() {
 			(function poll() {
 				setTimeout(function() {
@@ -97,7 +104,9 @@
 						url: "/getdists",
 						type: "GET",
 						success: function(data) {
-							draw_update('#update', data);
+							update_data(data);
+							update_table('#feed');
+							update_map('#map');
 							//console.log("Poll")
 						},
 						dataType: "json",
@@ -109,20 +118,29 @@
 		});
         // Load the data.
         var callback = function (data) {
-			draw_update('#update', data)
+			globalData = data; // Update global data
+			update_table('#feed');
         };
 
-		var draw_update = function(reference, data) {
+		var update_data = function(data) {
+			globalData = data
+		}
+		
+		var update_table = function(reference) {
 			$(reference).empty();
 			var str = ''
-			for (var dict in data) {
+			for (var dict in globalData) {
 				str += 'userId: ' + 
-					data[dict]['userId'] + 
+					globalData[dict]['userId'] + 
 					' distance: ' + 
-					data[dict]['distance'] + '<p>'
+					globalData[dict]['distance'] + '<p>'
 				//console.log('Drawing the update on reference ' + reference)
 			}
 			$(reference).html(str)
+		}
+
+		var update_map = function(reference, data) {
+
 		}
 
 		d3.json("/getdists", callback);
@@ -132,6 +150,8 @@
 	<script>
 		//var data = [{x:-8,y:100},{x:-10,y:110},{x: -12,y:120}];
 		 // Test Data
+		var dotData = [1]; // Not sure how this is getting used but some value is necessary
+		/*
 		var data = [{
 		    userId: 1,
 		    distance: 215
@@ -141,7 +161,7 @@
 		}, {
 		    userId: 3,
 		    distance: 192
-		}];
+		}];*/
 		
 		
 		var colorMap = {
@@ -174,7 +194,7 @@
 		var graticule = d3.geo.graticule()
 		    .step([5, 5]);
 
-		var svg = d3.select("body").append("svg")
+		var svg = d3.select("#map").append("svg")
 		    .attr("width", width)
 		    .attr("height", height);
 
@@ -184,7 +204,7 @@
 		    .attr("d", path);
 
 		svg.selectAll("circle")
-		    .data(data)
+		    .data(dotData)
 		    .enter()
 		    .append("circle")
 		    .attr("class", "dot")
@@ -198,9 +218,10 @@
 
 		setInterval(function () {
     
-		    data.forEach(function (datum) {
+		    globalData.forEach(function (datum) {
 		        console.log("color: ", colorMap[datum.userId]);
 		        console.log("radius: ", datum.distance);
+				console.log("globalData?", globalData)
 
 		        svg.append("circle")
 		            .attr("class", "ring")
