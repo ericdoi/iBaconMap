@@ -118,6 +118,9 @@
 		}
 	</script>
     <script>
+		var UID_NAME = 'uuid';
+		var DIST_NAME = 'proximity';
+		
 		var globalData; // Global
 		var uidVisitOrder = {}; // Global. Track the order in which new uids are seen.
 
@@ -126,15 +129,17 @@
 			(function poll() {
 				setTimeout(function() {
 					$.ajax({
-						url: "/getdists",
+						//url: "/getdists",
+						url: "http://iheartbacon.retentionsandbox.com/sites/1/who-wants-my-bacon",
 						type: "GET",
 						success: function(data) {
 							update_data(data);
 							update_table('#feed');
 							update_map('#map');
-							//console.log("Poll")
+							console.log("Poll")
 						},
 						dataType: "json",
+						crossDomain: true,
 						complete: poll,
 						timeout: 1000
 					}) //, 5000  <-- oops.
@@ -143,14 +148,14 @@
 		});
         // Load the data.
         var callback = function (data) {
-			globalData = data; // Update global data
-			update_table('#feed');
+			//update_data(data); // Update global data
+			//update_table('#feed');
         };
 
 		var update_data = function(data) {
 			globalData = data;
 			for (var dict in globalData) {
-				var thisUser = globalData[dict]['userId'];
+				var thisUser = globalData[dict][UID_NAME];
 				if (!(thisUser in uidVisitOrder)) {
 					uidVisitOrder[thisUser] = Object.keys(uidVisitOrder).length;
 				}
@@ -166,9 +171,9 @@
 			var str = ''
 			for (var dict in globalData) {
 				str += 'userId: ' + 
-					globalData[dict]['userId'] + 
+					globalData[dict][UID_NAME] + 
 					' distance: ' + 
-					globalData[dict]['distance'] + '<p>'
+					globalData[dict][DIST_NAME] + '<p>'
 				//console.log('Drawing the update on reference ' + reference)
 			}
 			$(reference).html(str)
@@ -178,8 +183,10 @@
 
 		}
 
-		d3.json("/getdists", callback);
-
+		
+		//d3.json("/getdists", callback);
+		d3.json("http://iheartbacon.retentionsandbox.com/sites/1/who-wants-my-bacon", callback);
+		
     </script>
 
 	<script>
@@ -201,7 +208,7 @@
 		    distance: 192
 		}];*/
 		
-		var MAX_COLORS = 10;
+		var MAX_COLORS = 5; // Should make this fail better.
 		
 		/*var colorMap = {
 		    1:"#0000FF",
@@ -217,10 +224,11 @@
 			return map;
 		};
 		
+		var SCALE = 15; // # pixels per unit radius.
 		var colorMap = generateColorMap(MAX_COLORS);
     
 		var interval = 750;
-
+		
 		var width = 960,
 		    height = 500;
 
@@ -270,23 +278,28 @@
 		setInterval(function () {
     
 		    globalData.forEach(function (datum) {
-		        console.log("color: ", colorMap[datum.userId]);
-		        console.log("radius: ", datum.distance);
-				console.log("globalData?", globalData)
+				var newColor = colorMap[ uidVisitOrder[datum[UID_NAME]] ];
+				var newRad = Number(datum[DIST_NAME]*SCALE);
+		        console.log("color: ", newColor);
+		        console.log("radius: ", newRad );
+				console.log("globalData?", globalData);
+				console.log("uid?", datum[UID_NAME]);
+				console.log(uidVisitOrder);
+				console.log("colorMap?", colorMap);
 
 		        svg.append("circle")
 		            .attr("class", "ring")
 		            .attr("transform", translateCircle(beacon)) // Translate by one beacon, decoupled from globalData
-		            .attr("r", datum.distance)
+		            .attr("r", newRad)
 		            .style("stroke-width", 3)
-		            .style("stroke", colorMap[datum.userId])
+		            .style("stroke", newColor)
 		            .transition()
 		            .ease("linear")
 		            .duration(2000)
 		            .style("stroke-opacity", 1e-6)
 		            .style("stroke-width", 1)
-		            .style("stroke", colorMap[datum.userId])
-		            .attr("r", datum.distance)
+		            .style("stroke", newColor)
+		            .attr("r", newRad )
 		            .remove();
 		    })
 		}, interval)
