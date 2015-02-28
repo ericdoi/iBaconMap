@@ -150,7 +150,8 @@
 	<script>
 		//var data = [{x:-8,y:100},{x:-10,y:110},{x: -12,y:120}];
 		 // Test Data
-		var dotData = [1]; // Not sure how this is getting used but some value is necessary
+		var beacon = {x: 0, y: 0};
+		var beacons = [beacon];
 		/*
 		var data = [{
 		    userId: 1,
@@ -172,8 +173,7 @@
     
 		var interval = 750;
 
-		var originX = -10;
-		var originY = 0;
+
 
 		var width = 960,
 		    height = 500;
@@ -204,7 +204,7 @@
 		    .attr("d", path);
 
 		svg.selectAll("circle")
-		    .data(dotData)
+		    .data(beacons)
 		    .enter()
 		    .append("circle")
 		    .attr("class", "dot")
@@ -212,8 +212,13 @@
 		    .attr("r", 8);
 
 
-		function translateCircle(datum, index) {
-		    return "translate(" + projection([originX, originY]) + ")";
+		function translateCircle(beacon, index) {
+			console.log("translate(" + projection([beacon.x, beacon.y]) + ")");
+			return "translate(" + projection([beacon.x, beacon.y]) + ")";
+			console.log('Beacon:' + beacon);
+			//console.log("translate(" + projection([originX, originY]) + ")");
+			//return "translate(" + projection([originX, originY]) + ")";
+
 		};
 
 		setInterval(function () {
@@ -225,7 +230,7 @@
 
 		        svg.append("circle")
 		            .attr("class", "ring")
-		            .attr("transform", translateCircle(datum))
+		            .attr("transform", translateCircle(beacon)) // Translate by one beacon, decoupled from globalData
 		            .attr("r", datum.distance)
 		            .style("stroke-width", 3)
 		            .style("stroke", colorMap[datum.userId])
