@@ -3,58 +3,77 @@
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
 
-    <title>flask+d3 Hello World</title>
+    <title>iBacon Map</title>
 
-    <script src="http://d3js.org/d3.v2.js"></script>
+	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <style>
+		/* For table data */
+		td, th {
+		    padding: 1px 4px;
+		}
 
-/* For table data */
-td, th {
-    padding: 1px 4px;
-}
+		#intro  {
+		    padding:1em;
+		}
 
-#intro  {
-    padding:1em;
-}
+		path.line {
+		    fill: none;
+		    stroke: #666;
+		    stroke-width: 1.5px;
+		}
 
-path.line {
-    fill: none;
-    stroke: #666;
-    stroke-width: 1.5px;
-}
+		.domain {
+		    stroke-width: 1px;
+		}
 
-.domain {
-    stroke-width: 1px;
-}
+		circle {
+		    cursor: pointer;
+		}
 
-circle {
-    cursor: pointer;
-}
+		.axis {
+		    shape-rendering: crispEdges;
+		}
 
-.axis {
-    shape-rendering: crispEdges;
-}
+		.axis line, .axis path {
+		    stroke-width: 1px;
+		    stroke: #000;
+		    fill: none;
+		}
 
-.axis line, .axis path {
-    stroke-width: 1px;
-    stroke: #000;
-    fill: none;
-}
+		.tooltip {
+		    display: none;
+		}
 
-.tooltip {
-    display: none;
-}
+		.tooltip.active {
+		    display: block;
+		}
 
-.tooltip.active {
-    display: block;
-}
-
-.tooltip rect {
-    fill: #ff0000;
-}
-
+		.tooltip rect {
+		    fill: #ff0000;
+		}
     </style>
+
+	<style>
+		body {
+		    /*background: #192887;*/
+		}
+		.graticule {
+		    fill: none;
+		    stroke: #fff;
+		    stroke-width: .5px;
+		}
+		.land {
+		    fill: #007421;
+		}
+		.dot {
+		    fill: #c7141a;
+		}
+		.ring {
+		    fill: none;
+		    stroke: #c7141a;
+		}
+	</style>
 
 </head>
 <body>
@@ -67,6 +86,9 @@ circle {
 	
 	</div>
 
+	<div id='svg'>
+	</div>
+	
     <script>
 		$(document).ready(function() {
 			(function poll() {
@@ -107,5 +129,98 @@ circle {
 
     </script>
 
+	<script>
+		//var data = [{x:-8,y:100},{x:-10,y:110},{x: -12,y:120}];
+		 // Test Data
+		var data = [{
+		    userId: 1,
+		    distance: 215
+		}, {
+		    userId: 2,
+		    distance: 75
+		}, {
+		    userId: 3,
+		    distance: 192
+		}];
+		
+		
+		var colorMap = {
+		    1:"#0000FF",
+		    2:"#00FF00",
+		    3:"#9900CC"
+		}
+    
+		var interval = 750;
+
+		var originX = -10;
+		var originY = 0;
+
+		var width = 960,
+		    height = 500;
+
+		var projection = d3.geo.mercator()
+		    .center([0, 0])
+		    .scale(1275)
+		    .translate([width / 2, height / 2])
+		    .clipExtent([
+		    [0, 0],
+		    [width, height]
+		])
+		    .precision(.1);
+
+		var path = d3.geo.path()
+		    .projection(projection);
+
+		var graticule = d3.geo.graticule()
+		    .step([5, 5]);
+
+		var svg = d3.select("body").append("svg")
+		    .attr("width", width)
+		    .attr("height", height);
+
+		svg.append("path")
+		    .datum(graticule)
+		    .attr("class", "graticule")
+		    .attr("d", path);
+
+		svg.selectAll("circle")
+		    .data(data)
+		    .enter()
+		    .append("circle")
+		    .attr("class", "dot")
+		    .attr("transform", translateCircle)
+		    .attr("r", 8);
+
+
+		function translateCircle(datum, index) {
+		    return "translate(" + projection([originX, originY]) + ")";
+		};
+
+		setInterval(function () {
+    
+		    data.forEach(function (datum) {
+		        console.log("color: ", colorMap[datum.userId]);
+		        console.log("radius: ", datum.distance);
+
+		        svg.append("circle")
+		            .attr("class", "ring")
+		            .attr("transform", translateCircle(datum))
+		            .attr("r", datum.distance)
+		            .style("stroke-width", 3)
+		            .style("stroke", colorMap[datum.userId])
+		            .transition()
+		            .ease("linear")
+		            .duration(1200)
+		            .style("stroke-opacity", 1e-6)
+		            .style("stroke-width", 1)
+		            .style("stroke", colorMap[datum.userId])
+		            .attr("r", datum.distance)
+		            .remove();
+		    })
+		}, interval)
+
+
+		d3.select(self.frameElement).style("height", height + "px");
+	</script>
 </body>
 </html>
